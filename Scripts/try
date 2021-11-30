@@ -1,0 +1,38 @@
+#/bin/bash
+
+command=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -i|--internal)
+      interval="$2"
+      shift
+      shift
+      ;;
+    -n|--number)
+      number="$2"
+      shift
+      shift
+      ;;
+    *)    # unknown option
+      command+=" $1" # save it in an array for later
+      shift
+      ;;
+  esac
+done
+
+repeat=0
+while [ ! $repeat -eq $((number)) ]; do
+  message="$(${command[@]} 2>&1)"
+
+  if [ $? -eq 0 ]; then
+      exit 0
+  fi
+
+  repeat=$((repeat+1))
+  sleep $interval
+done
+
+echo $message
+exit 1
